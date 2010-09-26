@@ -1,5 +1,13 @@
 FLickr upload script using FlickRaw.
 
+PRE-REQ
+ - flickr API keys
+   - create file flickr_config.rb
+   - add 3 values
+     - API_KEY - the api key flickr gave you for your application
+     - SHARED_SECRET - the shared secret flcikr gave you for your application
+     - TOKEN - a token with read/write access for your account - instructions on how to do this will be added later.
+
 set flickr_upload.rb as executable
 
 ./flickr_upload.rb <directory to upload>
