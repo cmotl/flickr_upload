@@ -1,0 +1,20 @@
+FLickr upload script using FlickRaw.
+
+set flickr_upload.rb as executable
+
+./flickr_upload.rb <directory to upload>
+
+Uploads images to flickr.
+
+All images(jpg, gif, png) in a folder will be uploaded, and then added to a set with a title corresponding to the folder name. No videos are uploaded.
+Any sub folders will also be uploaded in the same fashion, and will all become separate photosets.
+
+Logging to stdout and flickr_upload.log.
+
+If a set already exists with the title of the folder, the images will be added to that set.
+
+Currently, there is no resume functionality. Work around is to look at the log to see where the script died, remove all folders and images up to that point, and then restart the script.
+
+This is not perfect, and it does crash occasionally. It does what I need it to do without too much trouble. It's definitely a work in progress. Feel free to modify it to your hearts content.
+
+
