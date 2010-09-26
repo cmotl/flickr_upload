@@ -2,7 +2,7 @@
 
 require 'FlickRaw'
 require 'logger'
-require 'flickr_contants' #API_KEY, SHARED_SECRET, TOKEN
+require 'flickr_config' #API_KEY, SHARED_SECRET, TOKEN
 
 #flush output to stdout immediately
 STDOUT.sync = true
