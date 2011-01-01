@@ -8,6 +8,7 @@ require './flickr_config' #API_KEY, SHARED_SECRET, TOKEN
 STDOUT.sync = true
 
 $log = Logger.new "flickr_upload.log"
+$photosets_list = Array.new
 
 def show_usage()
   puts
@@ -19,7 +20,7 @@ def show_usage()
 end
 
 
-def upload_file(file)
+def upload_file(file, folder_name)
   puts      "  Uploading file: #{file} "
   $log.info "  Uploading file: #{file} "
   #photo_id = 1
@@ -84,6 +85,26 @@ def upload_file(file)
     failed = false
   end
   
+  #add photo to set corresponding to folder name
+  #if the set does not exist, create it
+  photoset_to_upload_to = nil
+  
+  $photosets_list.each { |item|
+  
+    if(item.title == folder_name)
+      photoset_to_upload_to = item
+      break
+    end
+    
+  }
+  
+  if(photoset_to_upload_to == nil)
+    create_set folder_name, photo_id
+    $photosets_list = flickr.photosets.getList
+  else
+    add_photo_to_set photo_id, photoset_to_upload_to.id
+  end
+  
   
   puts      "    Completed with id #{photo_id}"
   $log.info "    Completed with id #{photo_id}"
@@ -125,13 +146,14 @@ def create_set(set_name, primary_photo_id)
 
   puts      "    Completed with id #{photoset.id}"
   $log.info "    Completed with id #{photoset.id}"
-  return photoset.id
+  return photoset
   #return 2
 end
 
+
+
 def upload_folder(folder_name)
   
-  photo_ids = Array.new
   folders = Array.new
   
   Dir.chdir(folder_name)
@@ -149,39 +171,11 @@ def upload_folder(folder_name)
       folders << file
     else
       if /jpg|jpeg|gif|png/i =~ File.extname(file)#is it an image?
-        photo_id = upload_file file
-        photo_ids << photo_id
+        upload_file file, folder_name
       else
         puts      "  #{file} is not of allowed type to upload"
         $log.info "  #{file} is not of allowed type to upload"
       end
-    end
-  end
-  
-  if photo_ids.length > 0
-    photosets_list = flickr.photosets.getList
-    photoset_to_upload_to = nil
-    
-    photosets_list.each { |item|
-    
-      if(item.title == folder_name)
-        photoset_to_upload_to = item
-        break
-      end
-      
-    }
-    
-    if(photoset_to_upload_to == nil)
-      photoset_id = create_set folder_name, photo_ids[0]
-  
-      photo_ids.delete_at 0
-    else
-      photoset_id = photoset_to_upload_to.id
-    end
-    
-  
-    photo_ids.each do |photo_id|
-      add_photo_to_set photo_id, photoset_id
     end
   end
   
@@ -240,6 +234,8 @@ FlickRaw.api_key=API_KEY
 FlickRaw.shared_secret=SHARED_SECRET
 
 auth = flickr.auth.checkToken :auth_token => TOKEN
+
+$photosets_list = flickr.photosets.getList
 
 puts      "Starting upload for #{path}"
 $log.info "Starting upload for #{path}"
